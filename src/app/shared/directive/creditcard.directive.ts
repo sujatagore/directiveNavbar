@@ -1,12 +1,26 @@
-import { Directive, HostListener } from "@angular/core";
+import { Directive, ElementRef, HostListener, OnInit, Renderer2 } from "@angular/core";
 
 @Directive({
     selector : '[creditCardDir]'
 })
 
-export class CreditCardDirective{
+export class CreditCardDirective implements OnInit{
+   
+    constructor(
+        private eleref : ElementRef,
+        private render : Renderer2
+    ){}
 
     errormsg !: HTMLParagraphElement;
+
+    ngOnInit(): void {
+        this.errormsg = document.createElement('p')
+        this.errormsg.innerHTML = "Plz Enter Valid Number";
+        this.errormsg.className = 'alert alert-danger';
+        this.render.parentNode(this.eleref.nativeElement).append(this.errormsg);
+
+        this.errormsg.style.display = 'none'
+    }
 
     @HostListener('input', ['$event'])
         CreditCard(eve : Event){
@@ -19,10 +33,13 @@ export class CreditCardDirective{
             }
 
             if (/[^\d]/.test(creditval)) {
-                this.errormsg = document.createElement('p')
-                this.errormsg.innerHTML = `Plz Enter Valid Number`;
-                this.errormsg.className = 'alert alert-danger';
-                inputctrl.parentNode?.append(this.errormsg);
+                 this.errormsg.style.display = 'block'
+                // this.errorMsg = document.createElement('p');
+                // this.errorMsg.innerHTML = "Plz Enter Valid Credit Card Number";
+                // this.errorMsg.className = 'alert alert-danger';
+                // inputCtrl.parentNode?.append(this.errorMsg)
+            }else{
+                 this.errormsg.style.display = 'none'
             }
 
             creditval = this.CreditCardValue(creditval);
